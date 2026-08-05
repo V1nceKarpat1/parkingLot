@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using parkingLotAPI.Utils;
 using parkingLotAPI.Services;
 
 namespace parkingLotAPI.Controllers
@@ -14,5 +15,23 @@ namespace parkingLotAPI.Controllers
             return Ok(await reservationService.GetSpotsAsync());
         }
 
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSpotById(string id)
+        {
+            var response = await reservationService.GetSpotByIdAsync(id);
+
+            if (response.ResponseStatus == ResponseStatus.OK)
+            {
+                return Ok(response.ResponseData);
+            }
+            else
+            {
+                return NotFound($"Entry with ID: {id} not found");
+            }
+        }
     }
+
+
 }

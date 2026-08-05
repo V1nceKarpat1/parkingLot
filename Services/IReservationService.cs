@@ -6,6 +6,8 @@ namespace parkingLotAPI.Services
     public interface IReservationService
     {
         Task<ServiceResponse<List<SpotInfo>>> GetSpotsAsync();
-     
+        Task<ServiceResponse<SpotInfo>> GetSpotByIdAsync(string id);
+
+
     }
 }
