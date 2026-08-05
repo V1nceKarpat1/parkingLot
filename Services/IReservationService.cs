@@ -9,6 +9,7 @@ namespace parkingLotAPI.Services
         Task<ServiceResponse<SpotInfo>> GetSpotByIdAsync(string id);
         Task<ServiceResponse> PostReservationAsync(CreateReservationInfo createData);
         Task<ServiceResponse<List<ReservationHistoryInfo>>> GetSpotHistoryAsync(string id);
+        Task<ServiceResponse> DeleteReservationAsync(int id);
 
     }
 }

@@ -59,6 +59,21 @@ namespace parkingLotAPI.Controllers
                 return NotFound(response.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteReservation(int id)
+        {
+            var response = await reservationService.DeleteReservationAsync(id);
+
+            if (response.ResponseStatus == ResponseStatus.NO_CONTENT)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return NotFound(response.Message);
+            }
+        }
     }
 
 

@@ -39,6 +39,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<AppDbContext>();
+       
         context.Database.Migrate();
 
 

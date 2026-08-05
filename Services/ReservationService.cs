@@ -3,8 +3,7 @@ using parkingLotAPI.Data;
 using parkingLotAPI.DTOs;
 using parkingLotAPI.Models;
 using parkingLotAPI.Utils;
-using System.ComponentModel;
-using System.Diagnostics;
+
 
 namespace parkingLotAPI.Services
 {
@@ -12,14 +11,15 @@ namespace parkingLotAPI.Services
     {
         public async Task<ServiceResponse<List<SpotInfo>>> GetAllSpotsAsync()
         {
+            DateTime nowTime = DateTime.UtcNow;
             return new ServiceResponse<List<SpotInfo>>
             {
                 ResponseData = await dbContext.ParkingSpots
                 .Include(ps => ps.ReservationHistory)
                 .Select(ps => new SpotInfo
                 {
-                    SpotID = ps.SpotID,
-                    IsOccupied = ps.ReservationHistory.Any(r => r.EndTime > DateTime.Now)
+                    SpotID = ps.SpotID + $"{nowTime}",
+                    IsOccupied = ps.ReservationHistory.Any(r => r.EndTime > nowTime)
                 })
                 .ToListAsync(),
              
@@ -29,6 +29,7 @@ namespace parkingLotAPI.Services
 
         public async Task<ServiceResponse<SpotInfo>> GetSpotByIdAsync(string id)
         {
+            DateTime nowTime = DateTime.UtcNow;
             ParkingSpot? idSpot = await dbContext.ParkingSpots.FindAsync(id);
 
             if (!IsValidSpotId(id) || idSpot is null)
@@ -59,7 +60,8 @@ namespace parkingLotAPI.Services
         }
 
         public async Task<ServiceResponse> PostReservationAsync(CreateReservationInfo createData)
-        {  
+        {
+            DateTime nowTime = DateTime.UtcNow;
             if (string.IsNullOrWhiteSpace(createData.CustomerName)){
                 return new ServiceResponse
                 {
@@ -75,14 +77,14 @@ namespace parkingLotAPI.Services
                     Message = $"Invalid ID"
                 };
             }
-            if (createData.StartTime < DateTime.Now){
+            if (createData.StartTime < nowTime){
                 return new ServiceResponse
                 {
                     ResponseStatus = ResponseStatus.BAD_REQUEST,
                     Message = $"Start time should not be in the past"
                 };
             }
-            if (createData.StartTime < DateTime.Now)
+            if (createData.StartTime < nowTime)
             {
                 return new ServiceResponse
                 {
@@ -155,6 +157,27 @@ namespace parkingLotAPI.Services
                         .ToListAsync()
                 };
             }
+        }
+        public async Task<ServiceResponse> DeleteReservationAsync(int id)
+        {
+            Reservation? deleteEntry = await dbContext.Reservations.FindAsync(id);
+            if (deleteEntry is null)
+            {
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.NOT_FOUND,
+                    Message = $"Reservation with ID: {id} not found"
+                };
+            }
+
+            dbContext.Reservations.Remove(deleteEntry);
+            await dbContext.SaveChangesAsync();
+
+            return new ServiceResponse
+            {
+                ResponseStatus = ResponseStatus.NO_CONTENT,
+            };
+
         }
 
 
