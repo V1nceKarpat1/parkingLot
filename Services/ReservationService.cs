@@ -4,6 +4,7 @@ using parkingLotAPI.DTOs;
 using parkingLotAPI.Models;
 using parkingLotAPI.Utils;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace parkingLotAPI.Services
 {
@@ -36,6 +37,7 @@ namespace parkingLotAPI.Services
                 {
                     ResponseData = null,
                     ResponseStatus = ResponseStatus.NOT_FOUND,
+                    Message = $"Spot with ID: {id} not found"
                 };
             }
 
@@ -55,7 +57,86 @@ namespace parkingLotAPI.Services
                 ResponseStatus = ResponseStatus.OK
             };
         }
-           
+
+        public async Task<ServiceResponse> NewReservation(CreateReservation createData)
+        {  
+            if (string.IsNullOrWhiteSpace(createData.CustomerName)){
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.BAD_REQUEST,
+                    Message = $"Name cannot be empty"
+                };
+            }
+            if (!IsValidSpotId(createData.SpotId))
+            {
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.BAD_REQUEST,
+                    Message = $"Invalid ID"
+                };
+            }
+            if (createData.StartTime < DateTime.Now){
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.BAD_REQUEST,
+                    Message = $"Start time should not be in the past"
+                };
+            }
+            if (createData.StartTime < DateTime.Now)
+            {
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.BAD_REQUEST,
+                    Message = $"End time should not be in the past"
+                };
+            }
+            if (createData.StartTime > createData.EndTime)
+            {
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.BAD_REQUEST,
+                    Message = $"Start time should not be greater than end time"
+                };
+            }
+            var checkSpot = await GetSpotByIdAsync(createData.SpotId);
+            if (checkSpot.ResponseData!.IsOccupied)
+            {
+                return new ServiceResponse
+                {
+                    ResponseStatus = ResponseStatus.BAD_REQUEST,
+                    Message = $"Spot {createData.SpotId} is occupied"
+                };
+            }
+
+            Reservation newEntry = new Reservation
+            {
+                SpotID = createData.SpotId,
+                StartTime = createData.StartTime,
+                EndTime = createData.EndTime,
+                CustomerName  = createData.CustomerName
+            };
+
+            dbContext.Reservations.Add(newEntry);
+            await dbContext.SaveChangesAsync();
+
+            return new ServiceResponse
+            {
+                ResponseStatus = ResponseStatus.NO_CONTENT,
+            };
+        }
+
+
+
+        private bool IsValidSpotId(string id)
+        {
+
+            
+            return id.Length == 2
+                && id[0] >= 'A'
+                && id[0] <= 'J'
+                && char.IsDigit(id[1]);
+
+        }
               
         
 

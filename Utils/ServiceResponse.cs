@@ -11,6 +11,7 @@
     public class ServiceResponse
     {
         public ResponseStatus ResponseStatus { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
     public class ServiceResponse<T> : ServiceResponse
     {
