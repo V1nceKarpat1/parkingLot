@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using parkingLotAPI.Data;
+using parkingLotAPI.Utils;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,8 +38,8 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<AppDbContext>();
         context.Database.Migrate();
 
-        // Itt hívhatsz meg egy Seed metódust is, ha van kezdeti tesztadatod:
-        // DbInitializer.Initialize(context);
+
+        DbInitializer.Initialize(context);
     }
     catch (Exception ex)
     {

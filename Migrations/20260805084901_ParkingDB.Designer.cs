@@ -12,7 +12,7 @@ using parkingLotAPI.Data;
 namespace parkingLotAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260805075745_ParkingDB")]
+    [Migration("20260805084901_ParkingDB")]
     partial class ParkingDB
     {
         /// <inheritdoc />
