@@ -20,8 +20,7 @@ namespace parkingLotAPI.Data
                 .HasOne(r => r.ParkingSpot)
                 .WithMany(p => p.ReservationHistory)
                 .HasForeignKey(r => r.SpotID);
-            // Itt adhatod meg az extra beállításokat, pl.:
-            // modelBuilder.Entity<ParkingLot>().HasKey(p => p.Id);
+          
         }
     }
 }
