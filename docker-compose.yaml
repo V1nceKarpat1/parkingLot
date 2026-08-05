@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql_parking_db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Password123
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - parking-net
+
+  api:
+    image: parking-api
+    container_name: aspnet_parking_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=ParkingDb;User Id=sa;Password=YourStrong@Password123;TrustServerCertificate=True;
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - parking-net
+
+volumes:
+  mssql_data:
+
+networks:
+  parking-net:
+    driver: bridge
