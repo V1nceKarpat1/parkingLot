@@ -52,7 +52,7 @@ namespace parkingLotAPI.Services
                 .Select(ps => new SpotInfo
                 {
                     SpotID = ps.SpotID,
-                    IsOccupied = ps.ReservationHistory.Any(r => r.EndTime > DateTime.Now)
+                    IsOccupied = ps.ReservationHistory.Any(r => r.EndTime > nowTime)
                 })
                 .FirstOrDefaultAsync(),
                 ResponseStatus = ResponseStatus.OK
@@ -84,7 +84,7 @@ namespace parkingLotAPI.Services
                     Message = $"Start time should not be in the past"
                 };
             }
-            if (createData.StartTime < nowTime)
+            if (createData.EndTime < nowTime)
             {
                 return new ServiceResponse
                 {
