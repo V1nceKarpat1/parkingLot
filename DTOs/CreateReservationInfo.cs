@@ -1,6 +1,6 @@
 ﻿namespace parkingLotAPI.DTOs
 {
-    public class CreateReservation
+    public class CreateReservationInfo
     {
         public string SpotId { get; set; }  = string.Empty;
         public DateTime StartTime { get; set; }

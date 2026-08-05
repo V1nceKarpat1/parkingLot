@@ -10,7 +10,7 @@ namespace parkingLotAPI.Services
 {
     public class ReservationService(AppDbContext dbContext) : IReservationService
     {
-        public async Task<ServiceResponse<List<SpotInfo>>> GetSpotsAsync()
+        public async Task<ServiceResponse<List<SpotInfo>>> GetAllSpotsAsync()
         {
             return new ServiceResponse<List<SpotInfo>>
             {
@@ -31,7 +31,7 @@ namespace parkingLotAPI.Services
         {
             ParkingSpot? idSpot = await dbContext.ParkingSpots.FindAsync(id);
 
-            if (idSpot is null)
+            if (!IsValidSpotId(id) || idSpot is null)
             {
                 return new ServiceResponse<SpotInfo>
                 {
@@ -58,7 +58,7 @@ namespace parkingLotAPI.Services
             };
         }
 
-        public async Task<ServiceResponse> NewReservation(CreateReservation createData)
+        public async Task<ServiceResponse> PostReservationAsync(CreateReservationInfo createData)
         {  
             if (string.IsNullOrWhiteSpace(createData.CustomerName)){
                 return new ServiceResponse
@@ -98,8 +98,8 @@ namespace parkingLotAPI.Services
                     Message = $"Start time should not be greater than end time"
                 };
             }
-            var checkSpot = await GetSpotByIdAsync(createData.SpotId);
-            if (checkSpot.ResponseData!.IsOccupied)
+            var checkSpotResponse = await GetSpotByIdAsync(createData.SpotId);
+            if (checkSpotResponse.ResponseData!.IsOccupied)
             {
                 return new ServiceResponse
                 {
@@ -125,6 +125,37 @@ namespace parkingLotAPI.Services
             };
         }
 
+        public async Task<ServiceResponse<List<ReservationHistoryInfo>>> GetSpotHistoryAsync(string id)
+        {
+            var getResponse = await GetSpotByIdAsync(id);
+            if (getResponse.ResponseData is null)
+            {
+                return new ServiceResponse<List<ReservationHistoryInfo>>
+                {
+                    ResponseData = null,
+                    ResponseStatus = ResponseStatus.NOT_FOUND,
+                    Message = $"Spot with ID: {id} not found"
+                };
+            }
+            else
+            {
+                return new ServiceResponse<List<ReservationHistoryInfo>>
+                {
+                    ResponseStatus = ResponseStatus.OK,
+                    ResponseData = await dbContext.Reservations
+                        .Where(r=> r.SpotID == id)
+                        .Select(r => new ReservationHistoryInfo
+                        {
+                            SpotID = r.SpotID,
+                            CustomerName = r.CustomerName,
+                            StartTime = r.StartTime,
+                            EndTime = r.EndTime,
+
+                        })
+                        .ToListAsync()
+                };
+            }
+        }
 
 
         private bool IsValidSpotId(string id)

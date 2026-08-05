@@ -11,13 +11,13 @@ namespace parkingLotAPI.Controllers
     public class ReservationsController(IReservationService reservationService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAllSpots()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(await reservationService.GetSpotsAsync());
+            return Ok(await reservationService.GetAllSpotsAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetSpotById(string id)
+        public async Task<IActionResult> GetById(string id)
         {
             var response = await reservationService.GetSpotByIdAsync(id);
 
@@ -32,9 +32,9 @@ namespace parkingLotAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostReservation(CreateReservation createData)
+        public async Task<IActionResult> NewReservation(CreateReservationInfo createData)
         {
-            var response = await reservationService.NewReservation(createData);
+            var response = await reservationService.PostReservationAsync(createData);
 
             if (response.ResponseStatus == ResponseStatus.BAD_REQUEST)
             {
@@ -43,6 +43,20 @@ namespace parkingLotAPI.Controllers
             else
             {
                 return NoContent();
+            }
+        }
+        [HttpGet("history/{id}")]
+        public async Task<IActionResult> GetHistory(string id)
+        {
+            var response = await reservationService.GetSpotHistoryAsync(id);
+
+            if (response.ResponseStatus == ResponseStatus.OK)
+            {
+                return Ok(response.ResponseData);
+            }
+            else
+            {
+                return NotFound(response.Message);
             }
         }
     }
