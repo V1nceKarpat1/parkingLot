@@ -1,9 +1,11 @@
 ﻿using parkingLotAPI.DTOs;
+using parkingLotAPI.Utils;
 
 namespace parkingLotAPI.Services
 {
     public interface IReservationService
     {
-        Task<List<SpotInfo>> GetSpotInfosAsync();
+        Task<ServiceResponse<List<SpotInfo>>> GetSpotsAsync();
+     
     }
 }

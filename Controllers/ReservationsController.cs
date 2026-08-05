@@ -11,7 +11,7 @@ namespace parkingLotAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllSpots()
         {
-            return Ok(await reservationService.GetSpotInfosAsync());
+            return Ok(await reservationService.GetSpotsAsync());
         }
 
     }
