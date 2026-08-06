@@ -18,7 +18,7 @@ namespace parkingLotAPI.Services
                 .Include(ps => ps.ReservationHistory)
                 .Select(ps => new SpotInfo
                 {
-                    SpotID = ps.SpotID + $"{nowTime}",
+                    SpotID = ps.SpotID,
                     IsOccupied = ps.ReservationHistory.Any(r => r.EndTime > nowTime)
                 })
                 .ToListAsync(),
