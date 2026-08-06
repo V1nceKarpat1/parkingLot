@@ -16,10 +16,10 @@ namespace parkingLotAPI.Controllers
             return Ok(await reservationService.GetAllSpotsAsync());
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        [HttpGet("{spotId}")]
+        public async Task<IActionResult> GetById(string spotId)
         {
-            var response = await reservationService.GetSpotByIdAsync(id);
+            var response = await reservationService.GetSpotByIdAsync(spotId);
 
             if (response.ResponseStatus == ResponseStatus.OK)
             {
@@ -45,10 +45,10 @@ namespace parkingLotAPI.Controllers
                 return NoContent();
             }
         }
-        [HttpGet("history/{id}")]
-        public async Task<IActionResult> GetHistory(string id)
+        [HttpGet("history/{spotId}")]
+        public async Task<IActionResult> GetHistory(string spotId)
         {
-            var response = await reservationService.GetSpotHistoryAsync(id);
+            var response = await reservationService.GetSpotHistoryAsync(spotId);
 
             if (response.ResponseStatus == ResponseStatus.OK)
             {
@@ -60,10 +60,10 @@ namespace parkingLotAPI.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReservation(int id)
+        [HttpDelete("{reservationId}")]
+        public async Task<IActionResult> DeleteReservation(int reservationId)
         {
-            var response = await reservationService.DeleteReservationAsync(id);
+            var response = await reservationService.DeleteReservationAsync(reservationId);
 
             if (response.ResponseStatus == ResponseStatus.NO_CONTENT)
             {
